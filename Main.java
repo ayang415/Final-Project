@@ -1,58 +1,30 @@
-class Grid {
-    private char[][] grid;
-    public Grid(int rows, int cols) {
-        grid = new char[rows][cols];
-        for(int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                grid[i][j] = '.';
-            }
-        }
-    }
+import java.util.Scanner;
 
-    public void setCell(int row, int col, char value) {
-        grid[row][col] = value;
-    }
-
-    public char[][] getGrid() {
-        return grid;
-    }
-}
-
-class GridView {
-    public void displayGrid(char[][] grid) {
-        for(char[] row : grid) {
-            for(char cell : row) {
-                System.out.print(cell + " ");
-            }
-            System.out.println();
-        }
-    }
-}
-
-class GridController {
-    private Grid model;
-    private GridView view;
-
-    public GridController(Grid model, GridView view) {
-        this.model = model;
-        this.view = view;
-    }
-
-    public void updateView() {
-        view.displayGrid(model.getGrid());
-    }
-
-    public void setCell(int row, int col, char value) {
-        model.setCell(row, col, value);
-    }
-}
+//Store all words into a ArrayList after parsing with BufferList
 
 public class Main {
     public static void main(String[] args) {
-        Grid model = new Grid(5, 5);
+        Grid model = new Grid(16, 16);
         GridView view = new GridView();
         GridController controller = new GridController(model, view);
 
-        controller.setCell(2, 2, 'X');
+        Scanner myObj = new Scanner(System.in);
+
+        controller.makeLibrary();
+        controller.setCell(2, 2, "X");
+        view.displayGrid(model.getGrid());
+        System.out.println("What word do you want to place? ");
+        String word = myObj.nextLine();
+        System.out.println("Where do you want to place it (letter + number)? ");
+        String location = myObj.nextLine();
+        //if(can go 2 ways)
+        System.out.println("Place the word horizontal or vertical (h or v)? ");
+        String orient = myObj.nextLine();
+
+        myObj.close();
+    }
+
+    void key() {
+        //show what color corresponds to double points, etc
     }
 }
