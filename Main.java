@@ -4,27 +4,50 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Grid model = new Grid(16, 16);
-        GridView view = new GridView();
-        GridController controller = new GridController(model, view);
-
+        int turn = 1;
         Scanner myObj = new Scanner(System.in);
 
-        controller.makeLibrary();
-        controller.setCell(2, 2, "X");
-        view.displayGrid(model.getGrid());
-        System.out.println("What word do you want to place? ");
-        String word = myObj.nextLine();
-        System.out.println("Where do you want to place it (letter + number)? ");
-        String location = myObj.nextLine();
-        //if(can go 2 ways)
-        System.out.println("Place the word horizontal or vertical (h or v)? ");
-        String orient = myObj.nextLine();
+        System.out.println("WELCOME TO SCRABBLE\n");
+        System.out.println("1 - Instructions");
+        System.out.println("2 - Play");
+        System.out.println("3 - Quit");
+        System.out.println("----------------");
+        int choice = myObj.nextInt();
 
+        while(choice != 1 && choice != 2 && choice != 3) {
+            System.out.println("\nInvalid. Try again...");
+            choice = myObj.nextInt();
+        }
+
+        if(choice == 1) {
+            //instructions
+        } else if(choice == 2) {
+            Grid model = new Grid(16, 16);
+            GridView view = new GridView();
+            Player p1 = new Player();
+            Player p2 = new Player();
+            GridController controller = new GridController(model, view, p1, p2);
+
+            controller.makeLibrary();
+            controller.makePile();
+            System.out.println(controller.getPile().size());
+            controller.setCell(8, 8, "★");
+            view.displayGrid(model.getGrid());
+
+            System.out.println("What word do you want to place? ");
+            String word = myObj.nextLine();
+            System.out.println("Where do you want to place it (letter + number)? ");
+            String location = myObj.nextLine();
+            //if(can go 2 ways)
+            System.out.println("Place the word horizontal or vertical (h or v)? ");
+            String orient = myObj.nextLine();    
+        } else {
+            System.out.println("Thanks for playing");
+        }
         myObj.close();
     }
 
-    void key() {
+    static void key() {
         //show what color corresponds to double points, etc
     }
 }

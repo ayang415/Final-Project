@@ -6,8 +6,12 @@ public class Grid {
         for(int k = 1; k < rows; k++) {
             grid[0][k] = k + "";
         }
-        for(int i = 1; i < rows; i++) {
-            grid[i][0] = "A"; //change
+        int c = 1;
+        for(char alphabet = 'A'; alphabet <='O'; alphabet++ ) {
+            grid[c][0] = alphabet + "";
+            c++;
+        }
+        for(int i = 1; i < rows; i++) {  
             for (int j = 1; j < cols; j++) {
                 grid[i][j] = "■";
             }
