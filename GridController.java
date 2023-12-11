@@ -84,11 +84,16 @@ public class GridController {
         int count = 0;
         for(int i = 0; i < word.length(); i++) {
             if(!p.getHand().contains(word.charAt(i))) {
+                /*if(count > 0) {
+                    for(int j = 0; j < p.getPreppedTiles().size(); j++) {
+                        p.getHand().add(p.getPreppedTiles().get(j));
+                    }
+                }*/
                 return false;
             }
-            p.getHand().remove('e');
-            //i--;
-            p.getPreppedTiles().add(word.charAt(i) + "");
+            p.getHand().remove(Character.valueOf(word.charAt(i)));
+            p.getPreppedTiles().add(word.charAt(i));
+            count++;
         }
         return true;
     }
@@ -111,24 +116,61 @@ public class GridController {
     public boolean spacesCheck(String word, String location, String orient, int turn) {
         //is it blank or does it go out of bounds
         int count = 0;
-        for(int i = 0; i < word.length(); i++) {
-          //modify for if going h or v
-            int letter = location.charAt(0) - 64 + i;
-            int num = Integer.parseInt(location.substring(1)) + i;
+        if(orient.equals("h")) {
+            for(int i = 0; i < word.length(); i++) {
+                int letter = location.charAt(0) - 64;
+                int num = Integer.parseInt(location.substring(1)) + i;
+                if(letter < 0 || letter > 15 || num < 0 || num > 15 ) {
+                    return false;
+                }
+                if(!model.getGrid()[letter][num].equals("■") == true && !model.getGrid()[letter][num].equals("★") == true) {
+                    String placedLetter = model.getGrid()[letter][num];
+                    String attemptedLetter = word.charAt(i) + "";
+                    if(!placedLetter.equals(attemptedLetter)) {
+                        return false;
+                    }
+                    count++;
+                }
+            }
+        } else if(orient.equals("v")) {
+            for(int i = 0; i < word.length(); i++) {
+                int letter = location.charAt(0) - 64 + i;
+                int num = Integer.parseInt(location.substring(1));
+                if(letter < 0 || letter > 15 || num < 0 || num > 15 ) {
+                    return false;
+                }
+                if(!model.getGrid()[letter][num].equals("■") == true && !model.getGrid()[letter][num].equals("★") == true) {
+                    String placedLetter = model.getGrid()[letter][num];
+                    String attemptedLetter = word.charAt(i) + "";
+                    if(!placedLetter.equals(attemptedLetter)) {
+                        return false;
+                    }
+                    count++;
+                }
+            }
+        }
+        /*for(int i = 0; i < word.length(); i++) {
+            //modify for if going h or v
+            if(orient == "h") {
+                int letter = location.charAt(0) - 64;
+                int num = Integer.parseInt(location.substring(1)) + i;
+            } else {
+                int letter = location.charAt(0) - 64 + i;
+                int num = Integer.parseInt(location.substring(1));
+            }
+            
             if(letter < 0 || letter > 15 || num < 0 || num > 15 ) {
                 return false;
             }
-            if(!model.getGrid()[letter][num].equals("■") && !model.getGrid()[letter][num].equals("★")) {
+            if(!model.getGrid()[letter][num].equals("■") == true && !model.getGrid()[letter][num].equals("★") == true) {
                 String placedLetter = model.getGrid()[letter][num];
                 String attemptedLetter = word.charAt(i) + "";
                 if(!placedLetter.equals(attemptedLetter)) {
                     return false;
                 }
                 count++;
-                //append both the letter that is currently on the space and the attempted value and compare- if the same, good, if not return false
-                //this if statement must trigger for the word to be true (is it touching)
             }
-        }
+        }*/
         if(count == 0 && turn != 1) {
           return false;
         }
@@ -138,34 +180,18 @@ public class GridController {
     }
 
     public void addWord(String word, String location, String orient, Player p) {
-        /*ArrayList<String> seperated = new ArrayList<String>();
-        for(int i = 0; i < word.length(); i++) {
-            seperated.add(word.substring(i, i + 1));
-        }*/
         if(orient.equals("h")) {
             for(int i = 0; i < word.length(); i++) {
                 int letter = location.charAt(0) - 64;
                 int num = Integer.parseInt(location.substring(1)) + i;
-                setCell(letter, num, p.getPreppedTiles().get(i));
+                setCell(letter, num, p.getPreppedTiles().get(i) + "");
             }
         } else if(orient.equals("v")) {
             for(int i = 0; i < word.length(); i++) {
                 int letter = location.charAt(0) - 64 + i;
                 int num = Integer.parseInt(location.substring(1));
-                setCell(letter, num, p.getPreppedTiles().get(i));
+                setCell(letter, num, p.getPreppedTiles().get(i) + "");
             }
         }
-        //remove from hand
-        /*for(int i = 0; i < seperated.size(); i++) {
-            for(int j = 0; j < p.getHand().size(); j++) {
-                System.out.println(seperated.get(i));
-                System.out.println(p.getHand().get(j)+"");
-                if(seperated.get(i).equals(p.getHand().get(j) + "")) {
-                    System.out.println("test");
-                    p.getHand().remove(p.getHand().get(j));
-                    break;
-                }
-            }
-        }*/
     }
 }

@@ -49,9 +49,16 @@ public class Main {
                 
                 System.out.print("What word do you want to place? ");
                 word = myObj.nextLine().toUpperCase();
-                while(controller.inHand(word, temp) == false || controller.isWord(word) == false) {
+                boolean inHand = controller.inHand(word, temp);
+                while(inHand == false || controller.isWord(word) == false) {
+                    if(inHand == true && controller.isWord(word) == false) {
+                            for(int j = 0; j < temp.getPreppedTiles().size(); j++) {
+                                temp.getHand().add(temp.getPreppedTiles().get(j));
+                            }
+                    }
                     System.out.print("That word is not in your hand or is not valid. Try again: ");
                     word = myObj.nextLine().toUpperCase();
+                    inHand = controller.inHand(word, temp);
                 }
                 
 
@@ -71,7 +78,7 @@ public class Main {
                     System.out.print("Invalid. Try again (h or v): ");
                     orient = myObj.nextLine();
                 }
-              
+                
                 while(controller.spacesCheck(word, location, orient, turn) == false) {
                     System.out.println("Invalid placement. Try again: ");
                     if(turn != 1) {
