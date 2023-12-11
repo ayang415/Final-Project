@@ -16,6 +16,7 @@ public class Grid {
                 grid[i][j] = "■";
             }
         }
+        grid[8][8] = "★";
     }
 
     public void setCell(int row, int col, String value) {
