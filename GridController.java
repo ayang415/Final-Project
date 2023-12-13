@@ -58,7 +58,7 @@ public class GridController {
     public void shuffle() {
       Random rand = new Random(System.currentTimeMillis());
       for (int i = pile.size() - 1; i > 0; i--) {
-        int j = rand.nextInt(i+1);/*rand() % (i + 1);*/
+        int j = rand.nextInt(i+1);
         Character temp = pile.get(j);
         pile.set(j, pile.get(i));
         pile.set(i, temp);
@@ -84,12 +84,12 @@ public class GridController {
         int count = 0;
         for(int i = 0; i < word.length(); i++) {
             if(!p.getHand().contains(word.charAt(i))) {
-                /*if(count > 0) {
-                    for(int j = 0; j < p.getPreppedTiles().size(); j++) {
-                        p.getHand().add(p.getPreppedTiles().get(j));
-                    }
-                }*/
+                for(int j = 0; j < p.getPreppedTiles().size(); j++) {
+                    p.getHand().add(p.getPreppedTiles().get(j));
+                }
+                p.getPreppedTiles().clear();
                 return false;
+                
             }
             p.getHand().remove(Character.valueOf(word.charAt(i)));
             p.getPreppedTiles().add(word.charAt(i));
@@ -109,20 +109,49 @@ public class GridController {
         return false;
     }
 
-    /*public boolean checkIntersect(String word, String location, String orient) {
+    public boolean checkAround(String word, int letter, int num, String orient) {
+        String bottom = "";
+        String right = "";
+        int tempLetter = letter;
+        int tempNum = num;
       
-    }*/
+        while(tempLetter - 1 > 0 && !model.getGrid()[tempLetter - 1][tempNum].equals("■")) {
+            tempLetter--;
+        }
+        bottom += model.getGrid()[tempLetter][tempNum];
+        while(!model.getGrid()[tempLetter + 1][tempNum].equals("■")) {
+            bottom += model.getGrid()[tempLetter + 1][tempNum];
+            tempLetter++;
+        }
+        tempLetter = letter;
+          
+        while(tempNum - 1 > 0 && !model.getGrid()[tempLetter][tempNum - 1].equals("■")) {
+            tempNum--;
+        }
+        right += model.getGrid()[tempLetter][tempNum];
+        while(!model.getGrid()[tempLetter][tempNum + 1].equals("■")) {
+            right += model.getGrid()[tempLetter][tempNum + 1];
+            tempNum++;
+        }
+        tempNum = num;
+      
+        if(isWord(bottom) == false || isWord(right) == false) { return false; }
 
-    public boolean spacesCheck(String word, String location, String orient, int turn) {
-        //is it blank or does it go out of bounds
+        //IN HAND? - add handCheck either here or in spacesCheck
+        return true;
+    }
+
+    public boolean spacesCheck(String word, String location, String orient, Player temp, int turn) {
         int count = 0;
         if(orient.equals("h")) {
             for(int i = 0; i < word.length(); i++) {
                 int letter = location.charAt(0) - 64;
                 int num = Integer.parseInt(location.substring(1)) + i;
+                //out-of-bounds
                 if(letter < 0 || letter > 15 || num < 0 || num > 15 ) {
                     return false;
                 }
+                //empty space and crossover
                 if(!model.getGrid()[letter][num].equals("■") == true && !model.getGrid()[letter][num].equals("★") == true) {
                     String placedLetter = model.getGrid()[letter][num];
                     String attemptedLetter = word.charAt(i) + "";
@@ -130,7 +159,14 @@ public class GridController {
                         return false;
                     }
                     count++;
+                    if(checkAround(word, letter, num, orient) == false) {
+                        return false;
+                    };
+                    //MAKE SURE THE PIECE ISN'T PUT TWICE
+                  //Add attemptedLetter to hand if it's not already in hand
+                    temp.getHand().add(word.charAt(i));
                 }
+                
             }
         } else if(orient.equals("v")) {
             for(int i = 0; i < word.length(); i++) {
@@ -146,36 +182,28 @@ public class GridController {
                         return false;
                     }
                     count++;
+                    if(checkAround(word, letter, num, orient) == false) {
+                        return false;
+                    };
                 }
             }
         }
-        /*for(int i = 0; i < word.length(); i++) {
-            //modify for if going h or v
-            if(orient == "h") {
-                int letter = location.charAt(0) - 64;
-                int num = Integer.parseInt(location.substring(1)) + i;
-            } else {
-                int letter = location.charAt(0) - 64 + i;
-                int num = Integer.parseInt(location.substring(1));
-            }
-            
-            if(letter < 0 || letter > 15 || num < 0 || num > 15 ) {
+    
+        if(count == 0 && turn != 1) {
+            return false;
+        }
+        //if(turn == 1) {
+            if(inHand(word, temp) == false || isWord(word) == false) {
+                if(inHand(word, temp) == true && isWord(word) == false) {
+                    for(int j = 0; j < temp.getPreppedTiles().size(); j++) {
+                        temp.getHand().add(temp.getPreppedTiles().get(j));
+                    }
+                    temp.getPreppedTiles().clear();
+
+                }
                 return false;
             }
-            if(!model.getGrid()[letter][num].equals("■") == true && !model.getGrid()[letter][num].equals("★") == true) {
-                String placedLetter = model.getGrid()[letter][num];
-                String attemptedLetter = word.charAt(i) + "";
-                if(!placedLetter.equals(attemptedLetter)) {
-                    return false;
-                }
-                count++;
-            }
-        }*/
-        if(count == 0 && turn != 1) {
-          return false;
-        }
-        //is it touching anything
-        //does it make a valid word (isWord)
+        //}
         return true;
     }
 
