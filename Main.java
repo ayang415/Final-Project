@@ -35,61 +35,64 @@ public class Main {
             controller.draw(p2.getHand(), 7);
 
             while(p1.getWin() == false && p2.getWin() == false) {
-                String word, orient;
+                String word, orient, swap;
                 String location = "H8";
+                int addAmt = 0;
                 Player temp = new Player();
                 if(turn % 2 == 1) { temp = p1; }
                 else { temp = p2; }
 
-                System.out.println("\033[H\033[2J");
-                controller.updateView(temp);
+                System.out.print("\033\143");
+                controller.updateView(temp, p1, p2);
 
-                System.out.print("What word do you want to place? ");
-                word = myObj.nextLine().toUpperCase();
-                /*boolean inHand = controller.inHand(word, temp);
-                while(inHand == false || controller.isWord(word) == false) {
-                    if(inHand == true && controller.isWord(word) == false) {
-                        for(int j = 0; j < temp.getPreppedTiles().size(); j++) {
-                            temp.getHand().add(temp.getPreppedTiles().get(j));
-                        }
-                        temp.getPreppedTiles().clear();
-                        
-                    }
-                    System.out.print("That word is not in your hand or is not valid. Try again: ");
-                    word = myObj.nextLine().toUpperCase();
-                    inHand = controller.inHand(word, temp);
-                }*/
-
-
-                if(turn != 1) {
-                    System.out.print("Where do you want to place it (letter + number)? ");
-                    location = myObj.nextLine().toUpperCase();
-                }
-
-                System.out.print("Place the word horizontal or vertical (h or v)? ");
-                orient = myObj.nextLine();
-                while(orient.equals("h") == false && orient.equals("v") == false) {
-                    System.out.print("Invalid. Try again (h or v): ");
-                    orient = myObj.nextLine();
-                }
-
-                while(controller.spacesCheck(word, location, orient, temp, turn) == false) {
-                    System.out.println("Invalid placement. Try again: ");
+                System.out.println("1 - Pass");
+                System.out.println("2 - Exchange");
+                System.out.println("3 - Play");
+                System.out.println("----------------");
+                int option = myObj.nextInt();
+                myObj.nextLine();
+                if(option == 2) {
+                    System.out.print("Choose letter to switch out: ");
+                    swap = myObj.nextLine().toUpperCase();
+                    controller.draw(temp.getHand(), 1);
+                    controller.getPile().add(swap.charAt(0));
+                    //do letter removal
+                    temp.getHand().remove(swap.charAt(0));
+                } else if(option == 3) {
                     System.out.print("What word do you want to place? ");
                     word = myObj.nextLine().toUpperCase();
+
+                    addAmt = word.length();
+
                     if(turn != 1) {
                         System.out.print("Where do you want to place it (letter + number)? ");
                         location = myObj.nextLine().toUpperCase();
                     }
                     System.out.print("Place the word horizontal or vertical (h or v)? ");
                     orient = myObj.nextLine();
+                    while(orient.equals("h") == false && orient.equals("v") == false) {
+                        System.out.print("Invalid. Try again (h or v): ");
+                        orient = myObj.nextLine();
+                    }
+                
+                    while(controller.spacesCheck(word, location, orient, temp, turn, addAmt) == false) {
+                        System.out.println("Invalid placement. Try again: ");
+                        System.out.print("What word do you want to place? ");
+                        word = myObj.nextLine().toUpperCase();
+                        if(turn != 1) {
+                            System.out.print("Where do you want to place it (letter + number)? ");
+                            location = myObj.nextLine().toUpperCase();
+                        }
+                        System.out.print("Place the word horizontal or vertical (h or v)? ");
+                        orient = myObj.nextLine();
+                    }
+
+                    controller.addWord(word, location, orient, temp);
+                    //count points, add letters to hand
+                    controller.draw(temp.getHand(), addAmt);
+                    temp.points += addAmt;
                 }
 
-                controller.addWord(word, location, orient, temp);
-                /*if(all checks are true)
-                    substring word, then place starting at location
-                    if orient is h, move right, v moves down*/
-                //count points, add letters to hand
                 turn++;
             }  
         } else {

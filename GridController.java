@@ -72,8 +72,8 @@ public class GridController {
         }
     }
 
-    public void updateView(Player p) {
-        view.displayGrid(model.getGrid(), p);
+    public void updateView(Player p, Player p1, Player p2) {
+        view.displayGrid(model.getGrid(), p, p1, p2);
     }
 
     public void setCell(int row, int col, String value) {
@@ -81,7 +81,7 @@ public class GridController {
     }
 
     public boolean inHand(String word, Player p) {
-        int count = 0;
+        //int count = 0;
         for(int i = 0; i < word.length(); i++) {
             if(!p.getHand().contains(word.charAt(i))) {
                 for(int j = 0; j < p.getPreppedTiles().size(); j++) {
@@ -93,7 +93,7 @@ public class GridController {
             }
             p.getHand().remove(Character.valueOf(word.charAt(i)));
             p.getPreppedTiles().add(word.charAt(i));
-            count++;
+            //count++;
         }
         return true;
     }
@@ -137,11 +137,10 @@ public class GridController {
       
         if(isWord(bottom) == false || isWord(right) == false) { return false; }
 
-        //IN HAND? - add handCheck either here or in spacesCheck
         return true;
     }
 
-    public boolean spacesCheck(String word, String location, String orient, Player temp, int turn) {
+    public boolean spacesCheck(String word, String location, String orient, Player temp, int turn, int addAmt) {
         int count = 0;
         if(orient.equals("h")) {
             for(int i = 0; i < word.length(); i++) {
@@ -159,12 +158,15 @@ public class GridController {
                         return false;
                     }
                     count++;
+                    //check surrounding intersection
                     if(checkAround(word, letter, num, orient) == false) {
                         return false;
                     };
-                    //MAKE SURE THE PIECE ISN'T PUT TWICE
-                  //Add attemptedLetter to hand if it's not already in hand
-                    temp.getHand().add(word.charAt(i));
+                    //Add attemptedLetter to hand if it's not already in hand
+                    if(temp.getHand().contains(word.charAt(i)) == false) {
+                        addAmt--;
+                        temp.getHand().add(word.charAt(i));
+                    }
                 }
                 
             }
@@ -185,6 +187,11 @@ public class GridController {
                     if(checkAround(word, letter, num, orient) == false) {
                         return false;
                     };
+
+                    if(temp.getHand().contains(word.charAt(i)) == false) {
+                        addAmt--;
+                        temp.getHand().add(word.charAt(i));
+                    }
                 }
             }
         }
@@ -192,18 +199,16 @@ public class GridController {
         if(count == 0 && turn != 1) {
             return false;
         }
-        //if(turn == 1) {
-            if(inHand(word, temp) == false || isWord(word) == false) {
-                if(inHand(word, temp) == true && isWord(word) == false) {
-                    for(int j = 0; j < temp.getPreppedTiles().size(); j++) {
-                        temp.getHand().add(temp.getPreppedTiles().get(j));
-                    }
-                    temp.getPreppedTiles().clear();
 
+        if(inHand(word, temp) == false || isWord(word) == false) {
+            if(inHand(word, temp) == true && isWord(word) == false) {
+                for(int j = 0; j < temp.getPreppedTiles().size(); j++) {
+                    temp.getHand().add(temp.getPreppedTiles().get(j));
                 }
-                return false;
+                temp.getPreppedTiles().clear();
             }
-        //}
+            return false;
+        }
         return true;
     }
 
@@ -221,5 +226,6 @@ public class GridController {
                 setCell(letter, num, p.getPreppedTiles().get(i) + "");
             }
         }
+        p.getPreppedTiles().clear();
     }
 }
