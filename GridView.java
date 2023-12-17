@@ -9,7 +9,7 @@ public class GridView {
             System.out.println();
         }
         System.out.println();
-        System.out.println("Hand:");
+        System.out.println("Player " + p.getId() + " Hand:");
         for(Character piece : p.getHand()) {
             System.out.print(piece + " ");
         }
