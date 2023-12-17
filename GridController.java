@@ -81,7 +81,6 @@ public class GridController {
     }
 
     public boolean inHand(String word, Player p) {
-        //int count = 0;
         for(int i = 0; i < word.length(); i++) {
             if(!p.getHand().contains(word.charAt(i))) {
                 for(int j = 0; j < p.getPreppedTiles().size(); j++) {
@@ -89,32 +88,37 @@ public class GridController {
                 }
                 p.getPreppedTiles().clear();
                 return false;
-                
+
             }
             p.getHand().remove(Character.valueOf(word.charAt(i)));
             p.getPreppedTiles().add(word.charAt(i));
-            //count++;
         }
         return true;
     }
 
     public boolean isWord(String word) {
-        for(int i = 0; i < word.length(); i++) {
+        //for(int i = 0; i < word.length(); i++) {
             for(int j = 0; j < dict.size(); j++) {
                 if(dict.get(j).equals(word)) {
                     return true;
                 }
             }
-        }
+        //}
         return false;
     }
 
-    public boolean checkAround(String word, int letter, int num, String orient) {
+    public boolean checkAround(String word, int letter, int num, String location, String orient, Player temp) {
         String bottom = "";
         String right = "";
         int tempLetter = letter;
         int tempNum = num;
-      
+
+        /*for(int i = 0; i < word.length(); i++) {
+            temp.getHand().remove(Character.valueOf(word.charAt(i)));
+            temp.getPreppedTiles().add(word.charAt(i));
+        }
+        addWord(word, location, orient, temp);*/
+
         while(tempLetter - 1 > 0 && !model.getGrid()[tempLetter - 1][tempNum].equals("■")) {
             tempLetter--;
         }
@@ -124,7 +128,7 @@ public class GridController {
             tempLetter++;
         }
         tempLetter = letter;
-          
+
         while(tempNum - 1 > 0 && !model.getGrid()[tempLetter][tempNum - 1].equals("■")) {
             tempNum--;
         }
@@ -134,13 +138,19 @@ public class GridController {
             tempNum++;
         }
         tempNum = num;
-      
+
+        /*for(int j = 0; j < temp.getPreppedTiles().size(); j++) {
+          temp.getHand().add(temp.getPreppedTiles().get(j));
+        }
+        temp.getPreppedTiles().clear();*/
+        //clear board
+
         if(isWord(bottom) == false || isWord(right) == false) { return false; }
 
         return true;
     }
 
-    public boolean spacesCheck(String word, String location, String orient, Player temp, int turn, int addAmt) {
+    public boolean spacesCheck(String word, String location, String orient, Player temp, boolean letterPlaced) {
         int count = 0;
         if(orient.equals("h")) {
             for(int i = 0; i < word.length(); i++) {
@@ -159,16 +169,16 @@ public class GridController {
                     }
                     count++;
                     //check surrounding intersection
-                    if(checkAround(word, letter, num, orient) == false) {
+                    if(checkAround(word, letter, num, location, orient, temp) == false) {
                         return false;
                     };
                     //Add attemptedLetter to hand if it's not already in hand
                     if(temp.getHand().contains(word.charAt(i)) == false) {
-                        addAmt--;
+                        temp.addAmt--;
                         temp.getHand().add(word.charAt(i));
                     }
                 }
-                
+
             }
         } else if(orient.equals("v")) {
             for(int i = 0; i < word.length(); i++) {
@@ -184,19 +194,18 @@ public class GridController {
                         return false;
                     }
                     count++;
-                    if(checkAround(word, letter, num, orient) == false) {
+                    if(checkAround(word, letter, num, location, orient, temp) == false) {
                         return false;
                     };
-
                     if(temp.getHand().contains(word.charAt(i)) == false) {
-                        addAmt--;
+                        temp.addAmt--;
                         temp.getHand().add(word.charAt(i));
                     }
                 }
             }
         }
-    
-        if(count == 0 && turn != 1) {
+
+        if(count == 0 && letterPlaced) {
             return false;
         }
 
